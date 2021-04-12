@@ -61,22 +61,11 @@ class vec2
 
 		return result;
 	}
-
-	pow(arg)
-	{
-		var result = new vec2;
-
-		result.x = Math.pow(this.x, arg);
-		result.y = Math.pow(this.y, arg);
-
-		return result;
-	}
 }
 
-var mousePos = new vec2(0, 0);
-var freeformMode = false;
-
 // Track mouse position
+var mousePos = new vec2(0, 0);
+
 function getMousePos(canvas, evt)
 {
 	var rect = canvas.getBoundingClientRect();
@@ -91,7 +80,7 @@ canvas.addEventListener('mousemove',
 		getMousePos(canvas, evt);
 	}, false);
 
-
+// Load the sprites
 let images = [];
 for(var i = 0; i < 24; i++)
 {
@@ -107,7 +96,6 @@ for(var i = 0; i < 24; i++)
 	}
 
 	images[i].src = "./spheres/sphere-" + number + ".png";
-	console.log(images[i].src);
 }
 
 const gravity_constant = new vec2(0, 9.81);
@@ -129,43 +117,16 @@ class Ball
 		this.sprite = images[randomIntRange(0, 23)];
 
 		this.radius = randomIntRange(10, 40);
+
+		this.verticalLock = false;
 	}
 
 	update(delta_t)
 	{
-
-		if(freeformMode == true)
-		{
-			var acceleration = new vec2(0, 0);
-		}
-		else
-		{
-			// accelerate towards cursor
-			var diff = mousePos.distVec(this.pos);
-			if(diff.magnitude() > 100)
-			{
-				acceleration = new vec2(0,0);
-			}
-			else
-			{
-				var acceleration = diff.scale(300 / diff.magnitude());
-				acceleration = acceleration.scale(1.4);
-				acceleration.y *= 1.15;
-			}
-		}
-
-		this.vel = this.vel.add(acceleration.scale(delta_t));
-
+		// apply velocity
 		this.pos = this.pos.add(this.vel.scale(delta_t));
 
-		// apply gravity
-		var gravity = gravity_constant.scale(this.radius);
-		this.vel = this.vel.add(gravity.scale(delta_t));
-
-		// decelerate through drag
-		var deceleration = this.vel.scale(0.1);
-		this.vel = this.vel.sub(deceleration.scale(delta_t));
-
+		// check for collisions
 		var hasCollidedX = false;
 		var hasCollidedY = false;
 		if(this.pos.x > canvas.width - this.radius)
@@ -200,14 +161,38 @@ class Ball
 			hasCollidedY = true;
 		}
 
+		// accelerate away from cursor
+		var diff = mousePos.distVec(this.pos);
+		if(diff.magnitude() > 100)
+		{
+			acceleration = new vec2(0,0);
+		}
+		else
+		{
+			var acceleration = diff.scale(300 / diff.magnitude());
+			acceleration = acceleration.scale(1.4);
+			acceleration.y *= 1.15;
+		}
+
+		this.vel = this.vel.add(acceleration.scale(delta_t));
+		
+		// apply gravity
+		var gravity = gravity_constant.scale(this.radius);
+		this.vel = this.vel.add(gravity.scale(delta_t));
+
+		// decelerate through drag
+		var deceleration = this.vel.scale(0.1);
+		this.vel = this.vel.sub(deceleration.scale(delta_t));
 
 		if(hasCollidedX)
 		{
 			this.vel.x *= 0.7;
+			this.vel.y *= 0.9;
 		}
 		if(hasCollidedY)
 		{
 			this.vel.y *= 0.7;
+			this.vel.x *= 0.99;
 		}
 	}
 
@@ -218,19 +203,18 @@ class Ball
 	}
 };
 
-let flakes = [];
+let balls = [];
 
 for(var i = 0; i < 5; i++)
 {
-	flakes.push(new Ball(false));
+	balls.push(new Ball(false));
 }
 
 // Mouse click callback
 canvas.addEventListener('click',
 	function(evt)
 	{
-		flakes.push(new Ball);
-		console.log("add ball");
+		balls.push(new Ball);
 	}, false);
 
 
@@ -238,14 +222,9 @@ var delay = 20;
 setInterval(function() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	flakes.forEach(function(item)
+	balls.forEach(function(ball)
 	{
-
-		item.update(delay / 1000);
-		item.draw();
+		ball.update(delay / 1000);
+		ball.draw();
 	});
-
-
-
-
 }, delay);
