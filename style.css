@@ -1,23 +1,60 @@
 body
 {
 	background-color: #154a23;
-	margin-top: 30px;
-	text-align: center;
+	background-image: repeating-linear-gradient(0deg, #154a23 1%, #153a24 3%, #154a23 10%);
 }
 
 h1
 {
+	text-align: center;
 	color: #2e7cdb;
 }
 
-p
+p.textblock
 {
-	color: #ccb772;
+	color: #d1c277;
+	background-color: rgba(20, 20, 0, 0.3);
+	height: 120%;
+	margin: auto;
+	text-align: center;
+
+	padding-top: 7px;
+	padding-bottom: 7px;
 }
 
-canvas
+div.footer
+{
+	position:fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+
+	padding-left: 10px;
+	padding-right:10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+
+
+	background-color: rgba(20, 20, 0, 0.5);
+}
+
+.footerelement
+{
+	margin-left: 50px;
+	color: #ebb215;
+}
+
+
+.gamecanvas
+{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+}
+
+#ballcanvas
 {
 	background-color: #9ab099;
+	background-image: linear-gradient(#7096d4, #8aaeeb);
 }
-
-
