@@ -20,6 +20,8 @@ p.textblock
 
 	padding-top: 7px;
 	padding-bottom: 7px;
+
+	width = 600px;
 }
 
 div.footer
@@ -42,6 +44,18 @@ div.footer
 {
 	margin-left: 50px;
 	color: #ebb215;
+}
+
+.nav
+{
+	color: #ebb215;
+}
+
+.center
+{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
 }
 
 
