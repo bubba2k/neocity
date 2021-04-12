@@ -63,9 +63,9 @@ class vec2
 	}
 }
 
-// Track mouse position
 var mousePos = new vec2(0, 0);
 
+// Track mouse position
 function getMousePos(canvas, evt)
 {
 	var rect = canvas.getBoundingClientRect();
@@ -80,7 +80,7 @@ canvas.addEventListener('mousemove',
 		getMousePos(canvas, evt);
 	}, false);
 
-// Load the sprites
+
 let images = [];
 for(var i = 0; i < 24; i++)
 {
@@ -95,7 +95,7 @@ for(var i = 0; i < 24; i++)
 		number = i.toString();
 	}
 
-	images[i].src = "./spheres/sphere-" + number + ".png";
+	images[i].src = "res/spheres/sphere-" + number + ".png";
 }
 
 const gravity_constant = new vec2(0, 9.81);
@@ -203,18 +203,19 @@ class Ball
 	}
 };
 
-let balls = [];
+let flakes = [];
 
 for(var i = 0; i < 5; i++)
 {
-	balls.push(new Ball(false));
+	flakes.push(new Ball(false));
 }
 
 // Mouse click callback
 canvas.addEventListener('click',
 	function(evt)
 	{
-		balls.push(new Ball);
+		flakes.push(new Ball);
+		console.log("add ball");
 	}, false);
 
 
@@ -222,9 +223,14 @@ var delay = 20;
 setInterval(function() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	balls.forEach(function(ball)
+	flakes.forEach(function(item)
 	{
-		ball.update(delay / 1000);
-		ball.draw();
+
+		item.update(delay / 1000);
+		item.draw();
 	});
+
+
+
+
 }, delay);
