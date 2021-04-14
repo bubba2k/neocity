@@ -1,20 +1,39 @@
+var canvas = document.getElementById("glcanvas");
+var gl = canvas.getContext("webgl2");
+
 function main()
 {
-	var canvas = document.getElementById("glcanvas");
-	var gl = canvas.getContext("webgl2");
 
 	if(!gl)
 	{
 		window.alert("Unable to get WebGL context!");
 	}
 
-	gl.clearColor(0, 0, 0, 1.0);
-	gl.clear(gl.COLOR_BUFFER_BIT);
 
 
-	const shaderProgram = createProgram(gl, "res/shaders/v_simplepos.glsl",
-											"res/shaders/f_white.glsl");
+	const shaderProgram = createProgram(gl, "res/shaders/v_simplepos.txt",
+											"res/shaders/f_white.txt");
+    var mesh = new Mesh();
 
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    var vertices = new Float32Array([
+        -1.0,  1.0,  0.0,
+         1.0,  1.0,  0.0,
+         0.0, -1.0,  0.0
+    ]);
+
+    var indices = new Uint32Array([
+        0, 1, 2
+    ]);
+
+
+    mesh.sendVertices(vertices);
+    mesh.sendIndices(indices);
+
+    mesh.shader = shaderProgram;
+        
+    Renderer.drawMesh(mesh);
 }
 
 function compileShader(gl, shaderPath, shaderType)
@@ -23,10 +42,7 @@ function compileShader(gl, shaderPath, shaderType)
 	request.open("GET", shaderPath, false);
 	request.send();
 
-	var shaderFile = request.responseText;
-
-	var fileReader = new FileReader();
-	var shaderSource = fileReader.readAsText(shaderFile);
+	var shaderSource = request.responseText;
 
   // Create the shader object
   var shader = gl.createShader(shaderType);
@@ -87,7 +103,7 @@ class VertexArray
 
 	unbind()
 	{
-		gl.bindVertexArray(0);
+		gl.bindVertexArray(null);
 	}
 }
 
@@ -95,7 +111,7 @@ class Buffer
 {
 	constructor(strTarget)
 	{
-		this.target = (strType == "array" ? gl.ARRAY_BUFFER : gl.ELEMENT_ARRAY_BUFFER);
+		this.target = (strTarget == "array" ? gl.ARRAY_BUFFER : gl.ELEMENT_ARRAY_BUFFER);
 		this.id = gl.createBuffer();
 		this.valid = gl.isBuffer(this.id);
 	}
@@ -107,7 +123,8 @@ class Buffer
 
 	setData(arraybuffer)
 	{
-		gl.BufferData(this.target, arraybuffer, gl.STATIC_DRAW);
+        this.bind();
+		gl.bufferData(this.target, arraybuffer, gl.STATIC_DRAW);
 	}
 
 	unbind()
@@ -131,10 +148,10 @@ class Mesh
 {
 	constructor()
 	{
-		this.vertexArray = new VertexArray();
-		this.vertexBuffer = gl.createBuffer("array");
-		this.indexBuffer  = gl.createBuffer("element");
-		this.shader = 0;
+		this.vertexArray  = new VertexArray();
+		this.vertexBuffer = new Buffer("vertex");
+		this.indexBuffer  = new Buffer("element");
+        this.shader = 0;
 		this.usesElementBuffer = false;
 		this.count = 0;
 
@@ -145,6 +162,8 @@ class Mesh
 		this.vertexBuffer.bind();
 		gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, 0);
 		gl.enableVertexAttribArray(0);
+
+        this.vertexArray.unbind();
 	}
 
 	sendVertices(arraybuffer)
@@ -155,13 +174,13 @@ class Mesh
 	sendIndices(arraybuffer)
 	{
 		this.indexBuffer.setData(arraybuffer);
-		this.usesElementBuffer = true;
+        this.count = arraybuffer.length;
 	}
 }
 
 class Renderer
 {
-	drawMesh(mesh)
+	static drawMesh(mesh)
 	{
 		mesh.vertexArray.bind();
 		gl.useProgram(mesh.shader);

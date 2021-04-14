@@ -98,7 +98,7 @@ for(var i = 0; i < 24; i++)
 	images[i].src = "res/spheres/sphere-" + number + ".png";
 }
 
-const gravity_constant = new vec2(0, 0);
+const gravity_constant = new vec2(0, 9.81);
 
 class Ball
 {
@@ -116,9 +116,7 @@ class Ball
 
 		this.sprite = images[randomIntRange(0, 23)];
 
-		this.radius = randomIntRange(10, 40);
-
-		this.verticalLock = false;
+		this.radius = 12;
 	}
 
 	update(delta_t)
@@ -129,6 +127,7 @@ class Ball
 		// check for collisions
 		var hasCollidedX = false;
 		var hasCollidedY = false;
+
 		if(this.pos.x > canvas.width - this.radius)
 		{
 			this.pos.x = canvas.width - this.radius;
@@ -169,7 +168,7 @@ class Ball
 		}
 		else
 		{
-			var acceleration = diff.scale(300 / diff.magnitude());
+			var acceleration = diff.scale(200 / diff.magnitude());
 			acceleration = acceleration.scale(1.4);
 			acceleration.y *= 1.15;
 		}
@@ -203,34 +202,14 @@ class Ball
 	}
 };
 
-let flakes = [];
-
-for(var i = 0; i < 5; i++)
-{
-	flakes.push(new Ball(false));
-}
-
-// Mouse click callback
-canvas.addEventListener('click',
-	function(evt)
-	{
-		flakes.push(new Ball);
-		console.log("add ball");
-	}, false);
-
+var ball = new Ball();
 
 var delay = 20;
-setInterval(function() {
+setInterval(function() 
+	{
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	flakes.forEach(function(item)
-	{
+	ball.update(delay / 1000);
+	ball.draw();
 
-		item.update(delay / 1000);
-		item.draw();
-	});
-
-
-
-
-}, delay);
+	}, delay);
