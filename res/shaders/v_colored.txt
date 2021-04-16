@@ -1,0 +1,17 @@
+#version 300 es
+
+in mediump vec3 aPos;
+
+out mediump vec3 localPosition;
+
+uniform mat4 u_mvpMatrix;
+
+void main()
+{
+	mediump vec4 transformedPosition = vec4(aPos.xyz, 1);
+	transformedPosition = u_mvpMatrix * transformedPosition;
+
+	gl_Position = transformedPosition;
+
+	localPosition = aPos;
+}

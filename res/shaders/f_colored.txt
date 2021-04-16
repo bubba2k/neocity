@@ -1,0 +1,14 @@
+#version 300 es
+
+in mediump vec3 localPosition;
+out mediump vec4 FragColor;
+
+void main()
+{
+	mediump vec3 vecNormalizeMult = vec3(0.5, 0.5, 0.5);
+	mediump vec3 vecNormalizeAdd  = vec3(0.5, 0.5, 0.5);
+
+	mediump vec3 color = localPosition * vecNormalizeMult + vecNormalizeAdd;
+
+	FragColor = vec4(color, 1);
+}
